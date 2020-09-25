@@ -43,7 +43,7 @@ designDir=""
 
 #Prints input format and describes the parameters.
 def usage():
-  print "Usage: python makeDesignFiles.py --minFragLen=<n> --maxFragLen=<n>  [--maxLBrownEst=%d] [--binsize=%d] [removeb2b=True] [--removeAdjacent=True]\n\t[--rmapfile=<designDir>/*.rmap]\n\t[--baitmapfile=<designDir>/*.baitmap]\n\t[--designDir=.]\n\t[--outfilePrefix]\n\nminFragLen and maxFragLen no longer have defaults to prevent errors. Our recommended values for these parameters are:\n\tHindIII - 150 and 40000;\n\tDpnII - 75 and 1200, respectively\n\nIf designDir is provided and contains a single <baitmapfile>.baitmap and <rmapfile>.rmap, these will be used unless explicitly specified.\nLikewise, the output files will be saved in the designDir unless explicitly specified." % (maxLBrownEst, binsize)
+  print("Usage: python makeDesignFiles.py --minFragLen=<n> --maxFragLen=<n>  [--maxLBrownEst=%d] [--binsize=%d] [removeb2b=True] [--removeAdjacent=True]\n\t[--rmapfile=<designDir>/*.rmap]\n\t[--baitmapfile=<designDir>/*.baitmap]\n\t[--designDir=.]\n\t[--outfilePrefix]\n\nminFragLen and maxFragLen no longer have defaults to prevent errors. Our recommended values for these parameters are:\n\tHindIII - 150 and 40000;\n\tDpnII - 75 and 1200, respectively\n\nIf designDir is provided and contains a single <baitmapfile>.baitmap and <rmapfile>.rmap, these will be used unless explicitly specified.\nLikewise, the output files will be saved in the designDir unless explicitly specified." % (maxLBrownEst, binsize))
 
 '''
 Parameters taken by the python code:
@@ -94,15 +94,15 @@ for opt, arg in opts:
 
 #Error handling till line 138. Checking for existence of files, directories, etc.
 if minFragLen==-1 or maxFragLen==-1:
-   print "--minFragLen and --maxFragLen need to be defined explicitly. Our recommended values for these parameters are:\nHindIII - 150 and 40000 bps;\nDpnII - 75 and 1200 bps, respectively"
+   print("--minFragLen and --maxFragLen need to be defined explicitly. Our recommended values for these parameters are:\nHindIII - 150 and 40000 bps;\nDpnII - 75 and 1200 bps, respectively")
    usage()
    sys.exit(1)
    
 if designDir != "":
   if os.path.isdir(designDir):
-    print "\nUsing designDir %s" % designDir;
+    print("\nUsing designDir %s" % designDir)
   else:
-    print "\nError: designDir does not exist.\n";
+    print("\nError: designDir does not exist.\n")
     usage()
     sys.exit(1)
 else:
@@ -116,9 +116,9 @@ if baitmapfile == "":
         whichFiles.append(file)
   if len(whichFiles)==1:
     baitmapfile=os.path.join(designDir, whichFiles[0])
-    print "Located baitmapfile %s in %s" % (whichFiles[0], designDir)
+    print("Located baitmapfile %s in %s" % (whichFiles[0], designDir))
   else:
-    print "\nError: could not unambiguously locate baitmapfile in designDir.\n"
+    print("\nError: could not unambiguously locate baitmapfile in designDir.\n")
     usage()
     sys.exit(1)
 
@@ -130,9 +130,9 @@ if rmapfile == "":
         whichFiles.append(file)
   if len(whichFiles)==1:
     rmapfile=os.path.join(designDir, whichFiles[0])
-    print "Located rmapfile %s in %s" % (whichFiles[0], designDir)
+    print("Located rmapfile %s in %s" % (whichFiles[0], designDir))
   else:
-    print "\nError: could not unambiguously locate rmapfile in designDir.\n"
+    print("\nError: could not unambiguously locate rmapfile in designDir.\n")
     usage()
     sys.exit(1)
 
@@ -141,8 +141,8 @@ if outfilePrefix == "":
   filename = os.path.splitext(os.path.basename(rmapfile))[0]
   outfilePrefix = os.path.join(designDir,filename)
   
-print "Using options:\n\tminFragLen=%d, maxFragLen=%d, maxLBrownEst=%d, binsize=%d, removeb2b=%r, removeAdjacent=%r\n\trmapfile=%s\n\tbaitmapfile=%s\n\toutfilePrefix=%s\n" \
-% (minFragLen, maxFragLen, maxLBrownEst, binsize, removeB2B, removeAdjacent, rmapfile, baitmapfile, outfilePrefix)
+print("Using options:\n\tminFragLen=%d, maxFragLen=%d, maxLBrownEst=%d, binsize=%d, removeb2b=%r, removeAdjacent=%r\n\trmapfile=%s\n\tbaitmapfile=%s\n\toutfilePrefix=%s\n" \
+% (minFragLen, maxFragLen, maxLBrownEst, binsize, removeB2B, removeAdjacent, rmapfile, baitmapfile, outfilePrefix))
 
 a = open(rmapfile)
 print "Reading rmap...."
@@ -156,8 +156,8 @@ for line in a:
   r_row.add(line)
   l = line.split("\t")
   if len(l)!=4:	#Check number of columns.
-    print "Error: rmap file should have 4 columns: <chr> <start> <end> <id>. Got %d:" % len(l)
-    print l
+    print("Error: rmap file should have 4 columns: <chr> <start> <end> <id>. Got %d:" % len(l))
+    print(l)
     sys.exit(0)
   chr.append(l[0]) #chr = list of chromosome numbers.
   st.append(int(l[1]))	#st = list of starting restriction cut sites.
@@ -178,26 +178,26 @@ Output:
 '''
 if len(set(id)) != len(id):
   z = [k for k,v in Counter(id).items() if v>1] #k = ID, v = Count of the ID in the list "id"
-  print "Error: duplicate IDs found in rmap:"
-  print z  	#List of IDs which have duplicate copies in the list "id".
-  print "Exiting...\n"
+  print("Error: duplicate IDs found in rmap:")
+  print(z)  	#List of IDs which have duplicate copies in the list "id".
+  print("Exiting...\n")
   sys.exit(1)
 
 
 b = open(baitmapfile)
-print "Reading baitmap..."
+print("Reading baitmap...")
 bid = []
 for line in b:
   line = line.strip()
   l = line.split("\t")
   if len(l)!=5:
-    print "Error: baitmap file should have 5 columns: <chr> <start> <end> <id> <annotation>. Got %d:" % len(l)
-    print l
+    print("Error: baitmap file should have 5 columns: <chr> <start> <end> <id> <annotation>. Got %d:" % len(l))
+    print(l)
     sys.exit(1)
   if "\t".join(l[0:4]) not in r_row:
-    print "Error - the following entry in baitmapfile is not found in rmap:"	#Ensures that baitmap is a subset of rmap. rmap is the superset.
-    print l[0:4]
-    print "Exiting...\n"
+    print("Error - the following entry in baitmapfile is not found in rmap:")	#Ensures that baitmap is a subset of rmap. rmap is the superset.
+    print(l[0:4])
+    print("Exiting...\n")
     sys.exit(1)
   bid.append(int(l[3]))	#bid = list of bait IDs.
 b.close()
@@ -209,14 +209,14 @@ bid = set(bid)
 
 if len(bid) != len(bid0):
   z = [k for k,v in Counter(bid0).items() if v>1]
-  print "Error: duplicate IDs found in baitmap:"
-  print z
-  print "Exiting...\n"
+  print("Error: duplicate IDs found in baitmap:")
+  print(z)
+  print("Exiting...\n")
   sys.exit(1)
 
 del bid0
 
-print "Sorting rmap..."
+print("Sorting rmap...")
 
 '''
 How zip() works?
@@ -250,9 +250,9 @@ poe = open(poefile, "wt")
 poe.write("#\tminFragLen=%d\tmaxFragLen=%d\tmaxLBrownEst=%d\tbinsize=%d\tremoveb2b=%r\tremoveAdjacent=%r\trmapfile=%s\tbaitmapfile=%s\n" % \
 (minFragLen, maxFragLen, maxLBrownEst, binsize, removeB2B, removeAdjacent, rmapfile, baitmapfile))
 
-print "\nCreating .npb and .poe files..."
+print("\nCreating .npb and .poe files...")
 
-print "Looping through baits..."
+print("Looping through baits...")
 
 for i in xrange(len(st)):
   if not id[i] in bid:
@@ -324,7 +324,7 @@ for i in xrange(len(st)):
   
   #Just to show progress in for loop.
   if int(random.uniform(0,100))==1: 
-   print "%d " % i,
+   print("%d " % i,)
 
 npb.close()
 poe.close()
@@ -383,8 +383,8 @@ for i in xrange(len(st)):
   of.write("\n")
  
   if int(random.uniform(0,1000))==1: 
-   print "%d " % i,
+   print("%d " % i,)
 
 of.close()
 
-print "\nAll done!"
+prin("\nAll done!")
