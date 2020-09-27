@@ -207,16 +207,34 @@ Output:
 ['ball',1]
 ['cat',1]
 
-
+Checks list of rmap IDs for duplicates
 '''
 if len(set(id)) != len(id):
-  z = [k for k,v in Counter(id).items() if v>1] #k = ID, v = Count of the ID in the list "id"
+  z = [k for k,v in Counter(id).items() if v>1]  # k = ID, v = Count of the ID in the list "id"
   print("Error: duplicate IDs found in rmap:")
-  print(z)  	#List of IDs which have duplicate copies in the list "id".
+  print(z)  	 # List of IDs which have duplicates in the list "id".
   print("Exiting...\n")
   sys.exit(1)
 
 
+'''
+Open the rmap file. It looks like this:
+ 
+20	66476	   71941	   403463	DEFB125
+20	119103	138049	403475	DEFB126
+20	161620	170741	403482	DEFB128
+20	206075	209203	403491	DEFB129
+20	233983	239479	403499	DEFB132
+
+Column 1: the chromosome on which the bait fragment is found.
+Column 2: the position of the first nucleotide of the bait fragment.
+Column 3: the position of the last nucleotide of the bait fragment.
+Column 4: the fragment ID corresponding to the .rmap file.
+Column 5: the bait ID.
+
+The following code fragment checks the rmap file for incosistencies and then creates a list of bait IDs
+It also ensures that baitmap is a subset of rmap.
+'''
 b = open(baitmapfile)
 print("Reading baitmap...")
 bid = []
@@ -228,18 +246,21 @@ for line in b:
     print(l)
     sys.exit(1)
   if "\t".join(l[0:4]) not in r_row:
-    print("Error - the following entry in baitmapfile is not found in rmap:")	#Ensures that baitmap is a subset of rmap. rmap is the superset.
+    print("Error - the following entry in baitmapfile is not found in rmap:")	# Ensures that baitmap is a subset of rmap. rmap is the superset.
     print(l[0:4])
     print("Exiting...\n")
     sys.exit(1)
-  bid.append(int(l[3]))	#bid = list of bait IDs.
+  bid.append(int(l[3]))	                # bid = list of bait IDs.
 b.close()
 
+# r_row was the set of unique lines in the rmap file
 del r_row
 
 bid0 = bid
-bid = set(bid)
+bid = set(bid)   # typecasts "bid" as a set() 
 
+
+# Checks list of baitmap IDs for duplicates
 if len(bid) != len(bid0):
   z = [k for k,v in Counter(bid0).items() if v>1]
   print("Error: duplicate IDs found in baitmap:")
@@ -247,6 +268,7 @@ if len(bid) != len(bid0):
   print("Exiting...\n")
   sys.exit(1)
 
+# delete original list of bait IDs. bait IDs now present in bid, which is a set() object
 del bid0
 
 print("Sorting rmap...")
@@ -261,6 +283,8 @@ zip(a,b)
 Output:
 zipobject
 {('a',1),('b',2),('c',3)}
+
+
 '''
 oldchr = chr
 oldst = st
