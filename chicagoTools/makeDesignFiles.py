@@ -1,5 +1,11 @@
 '''
 WARNING: This code is python2.7! We have to change synatax.
+
+makeDesignFiles.py is used to generate the required files to run CHiCAGO. 
+These files contain information on the regions around the baits that have been specified in the .baitmap file.
+
+There are 2 input files to the code: the .rmap file and the .baitmap file.
+The code outputs 3 files: .poe file, .npb file, and .nbpb file.
 '''
 
 #! /usr/bin/env python
@@ -20,6 +26,7 @@ class Unbuffered(object):
        return getattr(self.stream, attr)
 
 sys.stdout = Unbuffered(sys.stdout)
+
 
 '''
 str2bool(v):
@@ -284,7 +291,8 @@ Output:
 zipobject
 {('a',1),('b',2),('c',3)}
 
-
+Sorting the rmap lists in the order chromosome #, start position, end position, ID
+zip ensures that while sorting, there is no mixing of the chromosome #, start position, end position, ID
 '''
 oldchr = chr
 oldst = st
@@ -295,13 +303,16 @@ id = [z for (x,y,z) in sorted(zip(oldchr, oldst, id))]
 del oldchr
 del oldst
 
+
 ### make NPerBinFile
 
+# Open .npb file and write header which contains the paramerter values
 npbfile = outfilePrefix+".npb"
 npb = open(npbfile, "wt")
 npb.write("#\tminFragLen=%d\tmaxFragLen=%d\tmaxLBrownEst=%d\tbinsize=%d\tremoveb2b=%r\tremoveAdjacent=%r\trmapfile=%s\tbaitmapfile=%s\n" % \
 (minFragLen, maxFragLen, maxLBrownEst, binsize, removeB2B, removeAdjacent, rmapfile, baitmapfile))
 
+# Open .poe file and write header which contains the paramerter values
 poefile = outfilePrefix+".poe"
 poe = open(poefile, "wt")
 poe.write("#\tminFragLen=%d\tmaxFragLen=%d\tmaxLBrownEst=%d\tbinsize=%d\tremoveb2b=%r\tremoveAdjacent=%r\trmapfile=%s\tbaitmapfile=%s\n" % \
@@ -311,6 +322,7 @@ print("\nCreating .npb and .poe files...")
 
 print("Looping through baits...")
 
+# 
 for i in xrange(len(st)):
   if not id[i] in bid:
     continue
