@@ -29,7 +29,8 @@ By converting to lower case inputs like Yes are also considered.
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
 
-#Default Values
+
+# Default Values for the parameters
 minFragLen=-1
 maxFragLen=-1
 maxLBrownEst = 1.5e6
@@ -41,9 +42,11 @@ baitmapfile = ""
 outfilePrefix = ""
 designDir=""
 
-#Prints input format and describes the parameters.
+
+# Prints input format and describes the parameters.
 def usage():
   print("Usage: python makeDesignFiles.py --minFragLen=<n> --maxFragLen=<n>  [--maxLBrownEst=%d] [--binsize=%d] [removeb2b=True] [--removeAdjacent=True]\n\t[--rmapfile=<designDir>/*.rmap]\n\t[--baitmapfile=<designDir>/*.baitmap]\n\t[--designDir=.]\n\t[--outfilePrefix]\n\nminFragLen and maxFragLen no longer have defaults to prevent errors. Our recommended values for these parameters are:\n\tHindIII - 150 and 40000;\n\tDpnII - 75 and 1200, respectively\n\nIf designDir is provided and contains a single <baitmapfile>.baitmap and <rmapfile>.rmap, these will be used unless explicitly specified.\nLikewise, the output files will be saved in the designDir unless explicitly specified." % (maxLBrownEst, binsize))
+
 
 '''
 Parameters taken by the python code:
@@ -58,6 +61,12 @@ Parameters taken by the python code:
 -f [baitmapfile path]
 -o [outfilePrefix Name]
 -d [DesignDir path]
+
+getopt.getopt(sys.argv[1:] Takes all arguments from the commnd line statement used to run this code and labels the inputs 'm:x:l:b:Bjr:f:o:d:'. Example:
+m: means the commnd line has the argument `-m 32`, which stands for minFragLen which is given as 32 by the user
+B  means the commnd line has the argument `-B`, which stands for removeB2B, it doesn't need an input
+
+The `try-except` statements are used for checking if all arguments are given by the user
 '''
 try: 
   opts, args = getopt.getopt(sys.argv[1:], 'm:x:l:b:Bjr:f:o:d:', \
@@ -66,6 +75,7 @@ except getopt.GetoptError:
   usage()
   sys.exit(120)
    
+# Assigns each of the input parameters to a variable
 for opt, arg in opts: 
   if opt in ('--minFragLen', '-m'):
     minFragLen = long(arg)
@@ -92,7 +102,8 @@ for opt, arg in opts:
   elif opt in ('--designDir', '-d'):
     designDir = arg
 
-#Error handling till line 138. Checking for existence of files, directories, etc.
+      
+# Error handling till next comment. Checking for existence of files, directories, etc that were given as input.
 if minFragLen==-1 or maxFragLen==-1:
    print("--minFragLen and --maxFragLen need to be defined explicitly. Our recommended values for these parameters are:\nHindIII - 150 and 40000 bps;\nDpnII - 75 and 1200 bps, respectively")
    usage()
@@ -144,26 +155,46 @@ if outfilePrefix == "":
 print("Using options:\n\tminFragLen=%d, maxFragLen=%d, maxLBrownEst=%d, binsize=%d, removeb2b=%r, removeAdjacent=%r\n\trmapfile=%s\n\tbaitmapfile=%s\n\toutfilePrefix=%s\n" \
 % (minFragLen, maxFragLen, maxLBrownEst, binsize, removeB2B, removeAdjacent, rmapfile, baitmapfile, outfilePrefix))
 
+# Till here. Checked for existence of files, directories, etc that were given as input.
+
+
+'''
+Open the rmap file. It looks like this:
+ 
+20	1	   60024	403460
+20	60025	62654	403461
+20	62655	66475	403462
+20	66476	71941	403463
+20	71942	73977	403464
+
+Column 1: describes the chromosome on which the fragment is found.
+Column 2: describes the position of the first nucleotide of the fragment.
+Column 3: describes the position of the last nucleotide of the fragment.
+Column 4: describes the fragment ID.
+
+The following code fragment checks the rmap file for incosistencies and then creates 4 lists for each of the colummns in the rmap file
+'''
 a = open(rmapfile)
 print "Reading rmap...."
 chr = []
 st = []
 end = []
 id = []
-r_row = set()	#Method which creates an iterable containing distinct elements. Can be used on tuples, lists, etc.
+r_row = set()	         # set() Method creates an iterable containing distinct elements. Can be used on tuples, lists, etc.
 for line in a:
   line = line.strip()
   r_row.add(line)
   l = line.split("\t")
-  if len(l)!=4:	#Check number of columns.
+  if len(l)!=4:	      # Check number of columns in rmap file.
     print("Error: rmap file should have 4 columns: <chr> <start> <end> <id>. Got %d:" % len(l))
     print(l)
     sys.exit(0)
-  chr.append(l[0]) #chr = list of chromosome numbers.
-  st.append(int(l[1]))	#st = list of starting restriction cut sites.
-  end.append(int(l[2]))	#end = list of ending restriction cut sites.
-  id.append(int(l[3]))	#id = list of IDs given to restriction fragments.
+  chr.append(l[0])      # chr = list of chromosome numbers.
+  st.append(int(l[1]))	# st = list of starting restriction cut sites.
+  end.append(int(l[2]))	# end = list of ending restriction cut sites.
+  id.append(int(l[3]))	# id = list of IDs given to restriction fragments.
 a.close()
+
 
 '''
 How Counter() works:
@@ -175,6 +206,8 @@ Output:
 ['apple',2]
 ['ball',1]
 ['cat',1]
+
+
 '''
 if len(set(id)) != len(id):
   z = [k for k,v in Counter(id).items() if v>1] #k = ID, v = Count of the ID in the list "id"
