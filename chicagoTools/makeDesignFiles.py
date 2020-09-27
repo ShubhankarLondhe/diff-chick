@@ -322,19 +322,23 @@ print("\nCreating .npb and .poe files...")
 
 print("Looping through baits...")
 
-# 
-for i in xrange(len(st)):
+
+# Iterates over the start positions of the baits
+for i in range(len(st)):
+  
+  # If ID not in set of bait IDs, then skip 
   if not id[i] in bid:
     continue
-    
-  n = [0]*int(round(float(maxLBrownEst)/binsize)) #n is a list with its elements representing the bin counts. len(n) = number of bins.
+  
+  # n is a list with its elements representing the bin counts. len(n) = number of bins.
+  n = [0]*int(round(float(maxLBrownEst)/binsize)) 
 
   '''
   Iterates over the fragments which are before fragment i. Hence it iterates over fragment i-1 to 1.
   After it has reached a fragment such that d >= maxLBrownEst, then it breaks away from the loop.
-  When it reaches a fragment which is on another chromosome, it breaks away from the loop. 
+  If it reaches a fragment which is on another chromosome, it breaks away from the loop. 
   '''
-  for j in xrange(i-1,0,-1):
+  for j in range(i-1,0,-1):
    if chr[j] != chr[i]:
      break
    if removeB2B:
@@ -359,7 +363,7 @@ for i in xrange(len(st)):
   After it has reached a fragment such that d >= maxLBrownEst, then it breaks away from the loop.
   When it reaches a fragment which is on another chromosome, it breaks away from the loop. 
   '''
-  for j in xrange(i+1,len(st),1):
+  for j in range(i+1,len(st),1):
    if chr[j] != chr[i]:
      break
    if removeB2B:
@@ -385,7 +389,7 @@ for i in xrange(len(st)):
   Hence first value in list 'n' denotes no. of fragments found in the closest bin.
   '''  
   npb.write("%d\t" % id[i])
-  for k in xrange(len(n)):
+  for k in range(len(n)):
     npb.write("%d" % n[k])
     if k!=len(n)-1:
       npb.write("\t")
@@ -412,7 +416,7 @@ outfile = outfilePrefix+".nbpb"
 of = open(outfile, "wt")
 of.write("#\tmaxLBrownEst=%d\tbinsize=%d\trmapfile=%s\tbaitmapfile=%s\n" % (maxLBrownEst, binsize, rmapfile, baitmapfile))
 
-for i in xrange(len(st)):
+for i in range(len(st)):
     
   n = [0]*int(round(float(maxLBrownEst)/binsize))
   
@@ -421,7 +425,7 @@ for i in xrange(len(st)):
   else:
     iSt=i-1
 
-  for j in xrange(iSt,0,-1):
+  for j in range(iSt,0,-1):
    if chr[j] != chr[i]:
     break
    d = (st[i]+end[i])/2-(st[j]+end[j])/2
@@ -435,7 +439,7 @@ for i in xrange(len(st)):
   else:
     iSt=i+1
 
-  for j in xrange(iSt,len(st),1):
+  for j in range(iSt,len(st),1):
    if chr[j] != chr[i]:
     break
    d = (st[j]+end[j])/2-(st[i]+end[i])/2
@@ -445,7 +449,7 @@ for i in xrange(len(st)):
     n[d/binsize] += 1
   
   of.write("%d\t" % id[i])
-  for k in xrange(len(n)):
+  for k in range(len(n)):
     of.write("%d" % n[k])
     if k!=len(n)-1:
       of.write("\t")
